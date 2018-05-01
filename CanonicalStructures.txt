@@ -1,0 +1,66 @@
+The reification implementations based on canonical structures are rather
+concise, and fast when there are no binders, but they were an enormous pain to
+debug. Here is what we helped us get them working.
+
+The basic idea is that, when Coq's unification engine encounters a unification
+problem of the form projection e = term, if e is a term of record type with
+holes, and if there is a canonical structure declared for that record with the
+head constant of term in the field projection then Coq will try to solve
+the holes in e by unifying term with an application of the canonical structure.
+Importantly, canonical structures cannot be overlapping: for each field, the
+head constant of that field must be distinct across all definitions declared
+canonical for that field.
+
+Canonical-structure reification is much faster than Ltac reification for
+small terms without binders.  For large terms, we get bitten by the fact that
+canonical-structure resolution generates quadratically sized terms, much like
+typeclass resolution.
+
+Let us walk through a simple reification problem.
+Note that canonical structures cannot be overlapping: for each field, the head
+constant of that field must be distinct across all definitions declared
+canonical for that field.
+
+We set up a number of tags and structures (code also in CanonicalStructuresFlatHOAS.v):
+
+	Structure tagged_nat := tag { untag : nat }.
+	Structure reified_of var :=
+	  reify { nat_of : tagged_nat ; reified_nat_of : @expr var }.
+	(* tags to control the order of application *)
+	Definition S_tag := tag.
+	Definition O_tag := S_tag.
+	Canonical Structure mul_tag n := O_tag n.
+	Canonical Structure reify_O var
+	  := reify (O_tag O) (@NatO var).
+	Canonical Structure reify_S var x
+	  := reify (S_tag (S (untag (nat_of x)))) (@NatS var (reified_nat_of x)).
+	Canonical Structure reify_mul var x y
+	  := reify (mul_tag (untag (nat_of x) * untag (nat_of y)))
+	           (@NatMul var (reified_nat_of x) (reified_nat_of y)).
+
+Suppose we are faced with the goal
+
+	untag (@nat_of var ?e) = S (0 * 0)
+
+We could solve this goal by running refine eq_refl, but let us step through the beginning of what Coq does.
+
+1. It sees untag _ = _ and so applies the canonical structure mul_tag to the right hand side, trying to solve the unification problem:
+2. nat_of ?e = mul_tag (S (0 * 0))} results in attempting to apply the canonical structure reify_mul.
+   However, mul_tag (untag (nat_of ?x) * untag (nat_of ?y)) does not unify with mul_tag (S (0 * 0)), and so unification backtracks, unfolding mul_tag, giving:
+3. nat_of ?e = O_tag (S (0 * 0)), which results in attempting to apply the canonical structure reify_O for O_tag.
+   This, too, fails unification, and so O_tag is unfolded, giving:
+4. nat_of ?e = S_tag (S (0 * 0)), which results in attempting to apply the canonical structure reify_S for S_tag.
+   This succeeds at the first level, instantiating ?e with S_tag (S (untag (nat_of ?x))) for a fresh evar ?x, spawning a new unification problem:
+5. untag (nat_of ?x) = 0 * 0
+   Here we again insert the canonical structure mul_tag and again try the canonical structure reify_mul, which this time succeeds, spawning two new problems where untag (nat_of _) must be unified with 0.
+   These, too, eventually succeed, through a somewhat drawn-out (but very fast) process.
+
+To reify binders, we can do something similar but pass around an explicit list of binders that exist in the context.
+Note that the order of tags is important; var_tl_tag should be the last one checked, because it is the only one with a recursive call that can be expected to fail.
+Note that reification by canonical structures for terms with binders tends to be fairly slow.
+Additionally, it suffers from an additional complexity: reifying let ... in ... space nodes seems to require "locking" the definition for Let_In
+(See "Locking, unlocking" in "A Small Scale Reflection Extension for the Coq system").
+If we do not block reduction with an opaque constant, Coq's unification will loop on inferring the identity function again and again.
+
+As we are inexperienced with reification by canonical structures, especially in the presence of binders, there are likely more opportunities to optimize this code, especially by playing with the tag order.
+

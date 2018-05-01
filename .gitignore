@@ -1,0 +1,17 @@
+*/Makefile.coq
+*/Makefile.coq.conf
+/*.pdf
+/Benchmarks/*.log
+/Benchmarks/*.log.tmp
+/Benchmarks/*.log.ok
+/Benchmarks/ParsingElaborated_medium.v
+/Benchmarks/ParsingElaborated_quick.v
+/Benchmarks/ParsingElaborated_slow.v
+/Benchmarks/ParsingFlat_medium.v
+/Benchmarks/ParsingFlat_quick.v
+/Benchmarks/ParsingFlat_slow.v
+/Benchmarks/Parsing_medium.v
+/Benchmarks/Parsing_quick.v
+/Benchmarks/Parsing_slow.v
+/bench.tmp.wl
+/extra-logs/bak/
