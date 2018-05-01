@@ -14,13 +14,15 @@ before_install:
 
 before_script:
   - uname -a
+  - which coqc
+  - which coqtop
   - coqc --version
   - echo | coqtop
   - git clone https://github.com/ppedrot/ltac2.git && (cd ltac2 && git checkout 7f562a9539522e56004596a751758a08cee798b1)
   - git clone https://github.com/unicoq/unicoq.git && (cd unicoq && git checkout fd5f41f32f5f7cb94de81d66a42dff18df7084a2)
   - git clone https://github.com/Mtac2/Mtac2.git && (cd Mtac2 && git checkout 607689192296bc42d75bc933ab2229a6b347c73b)
   - git clone https://github.com/Template-Coq/template-coq.git && (cd template-coq && git checkout d6f621d27e882f16cf555d78b3e587038951ea94)
-  - (cd ltac2 && make COQBIN="" && make install)
+  - (cd ltac2 && make && make install)
   - (cd unicoq && make && make install)
   - (cd Mtac2 && make && make install)
   - (cd template-coq && make && make install)
