@@ -4,6 +4,11 @@ sudo: required
 
 dist: trusty
 
+addons:
+  apt:
+    packages:
+      - debianutils
+
 env: COQ_VERSION="8.7.1"  COQ_PACKAGE="coq-8.7.1" PPA="ppa:jgross-h/many-coq-versions"
 
 before_install:
