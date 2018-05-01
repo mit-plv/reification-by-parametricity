@@ -200,3 +200,11 @@ The Makefile target bench.wl will create a Wolfram Mathematica
 file with the relevant benchmark results in it, and the WolframScript file
 reification-by-parametricity-graphs.wls can use this file to generate the PDF
 graphs in the paper.
+
+## Benchmarking Results
+
+We have included the results of running benchmarking in this repository for convenience.
+
+- [`bench.wl`](./bench.wl) - the processed benchmarking data, in Mathematica format
+- [`extra-logs/aggregate.json.gz`](./extra-logs/aggregate.json.gz) - the raw benchmarking data from multiple runs, in gzipped json format
+- A number of graphs in [`graphs/`](./graphs/).
