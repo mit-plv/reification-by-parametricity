@@ -207,4 +207,16 @@ We have included the results of running benchmarking in this repository for conv
 
 - [`bench.wl`](./bench.wl) - the processed benchmarking data, in Mathematica format
 - [`extra-logs/aggregate.json.gz`](./extra-logs/aggregate.json.gz) - the raw benchmarking data from multiple runs, in gzipped json format
-- A number of graphs in [`graphs/`](./graphs/).
+- A number of graphs in [`graphs/`](./graphs/), including:
+
+![Size of term (with binders) vs Reification time (log-log)](./graphs/actual-reif-with-binders-log-log-subset.png)
+
+![Size of term (with binders) vs Reification time](./graphs/actual-reif-with-binders.png)
+
+![Size of term (no binders) vs Reification time](./graphs/actual-reif-no-binders.png)
+
+![Size of term (no binders) vs Reification time (log-log)](./graphs/big-flat-actual-reif-loglog.png)
+
+![Size of term (with binders) vs Reification time (log-log, extended plot)](./graphs/actual-reif-with-binders-log-log.png)
+
+
