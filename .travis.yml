@@ -4,7 +4,7 @@ sudo: required
 
 dist: trusty
 
-env: COQ_VERSION="8.7.1"  COQ_PACKAGE="coq-8.7.1 libcoq-8.7.1-ocaml-dev" PPA="ppa:jgross-h/many-coq-versions"
+env: COQ_VERSION="8.8.0"  COQ_PACKAGE="coq-8.8.0 libcoq-8.8.0-ocaml-dev" PPA="ppa:jgross-h/many-coq-versions"
 
 before_install:
   - sudo add-apt-repository "$PPA" -y
@@ -18,10 +18,10 @@ before_script:
   - which coqtop
   - coqc --version
   - echo | coqtop
-  - git clone https://github.com/ppedrot/ltac2.git && (cd ltac2 && git checkout d0591d12344adeaff7f51dc56f38ebcda7ba7c7c)
-  - git clone https://github.com/unicoq/unicoq.git && (cd unicoq && git checkout fd5f41f32f5f7cb94de81d66a42dff18df7084a2)
-  - git clone https://github.com/Mtac2/Mtac2.git && (cd Mtac2 && git checkout 607689192296bc42d75bc933ab2229a6b347c73b)
-  - git clone https://github.com/Template-Coq/template-coq.git && (cd template-coq && git checkout d6f621d27e882f16cf555d78b3e587038951ea94)
+  - git clone https://github.com/ppedrot/ltac2.git && (cd ltac2 && git checkout 49736b7a1acc23cda6c869645f4a8755ca1b8b65)
+  - git clone https://github.com/unicoq/unicoq.git && (cd unicoq && git checkout v1.3-8.8)
+  - git clone https://github.com/Mtac2/Mtac2.git && (cd Mtac2 && git checkout master-8.8)
+  - git clone https://github.com/Template-Coq/template-coq.git && (cd template-coq && git checkout 3310f81fce603c20dd1fb7d5592ab0402a35f0d9)
   - (cd ltac2 && make && sudo make install)
   - (cd unicoq && coq_makefile -f Make -o Makefile && make && sudo make install)
   - (cd Mtac2 && coq_makefile -f _CoqProject -o Makefile && make && sudo make install)
