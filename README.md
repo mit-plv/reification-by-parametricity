@@ -52,7 +52,7 @@ For benchmarking, we used
 
 - OCaml 4.02.3
 - Coq 8.7.1
-- Ltac2 commit 7f562a9539522e56004596a751758a08cee798b1 from https://github.com/ppedrot/ltac2.git
+- Ltac2 commit d0591d12344adeaff7f51dc56f38ebcda7ba7c7c from https://github.com/ppedrot/ltac2.git
 - UniCoq commit fd5f41f32f5f7cb94de81d66a42dff18df7084a2 from https://github.com/unicoq/unicoq.git
 - Mtac2 commit 607689192296bc42d75bc933ab2229a6b347c73b from https://github.com/Mtac2/Mtac2.git
 - Template-Coq commit d6f621d27e882f16cf555d78b3e587038951ea94 from https://github.com/Template-Coq/template-coq.git
@@ -218,5 +218,3 @@ We have included the results of running benchmarking in this repository for conv
 ![Size of term (no binders) vs Reification time (log-log)](./graphs/big-flat-actual-reif-loglog.png)
 
 ![Size of term (with binders) vs Reification time (log-log, extended plot)](./graphs/actual-reif-with-binders-log-log.png)
-
-
