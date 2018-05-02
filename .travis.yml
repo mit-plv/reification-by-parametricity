@@ -24,7 +24,7 @@ before_script:
   - git clone https://github.com/Template-Coq/template-coq.git && (cd template-coq && git checkout d6f621d27e882f16cf555d78b3e587038951ea94)
   - (cd ltac2 && make && sudo make install)
   - (cd unicoq && coq_makefile -f Make -o Makefile && make && sudo make install)
-  - (cd Mtac2 && coq_makefile -f Make -o Makefile && make && sudo make install)
+  - (cd Mtac2 && coq_makefile -f _CoqProject -o Makefile && make && sudo make install)
   - (cd template-coq && make && sudo make install)
 
 script: make -j2
