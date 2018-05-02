@@ -4,7 +4,7 @@ sudo: required
 
 dist: trusty
 
-env: COQ_VERSION="8.7.1"  COQ_PACKAGE="coq-8.7.1" PPA="ppa:jgross-h/many-coq-versions"
+env: COQ_VERSION="8.7.1"  COQ_PACKAGE="coq-8.7.1 libcoq-8.7.1-ocaml-dev" PPA="ppa:jgross-h/many-coq-versions"
 
 before_install:
   - sudo add-apt-repository "$PPA" -y
