@@ -25,6 +25,6 @@ before_script:
   - (cd ltac2 && make && sudo make install)
   - (cd unicoq && coq_makefile -f Make -o Makefile && make && sudo make install)
   - (cd Mtac2 && coq_makefile -f _CoqProject -o Makefile && make && sudo make install)
-  - (cd template-coq && make && sudo make install)
+  - (cd template-coq && make -k && sudo make install -k)
 
 script: make -j2
