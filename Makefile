@@ -165,3 +165,23 @@ graphs: bench.wl reification-by-parametricity-graphs.wls
 .PHONY: copy-graphs
 copy-graphs:
 	mv -f -t graphs/ $(GRAPHS)
+
+.PHONY: pngs svgs emfs
+pngs: $(GRAPHS:%.pdf=graphs/%.png)
+svgs: $(GRAPHS:%.pdf=graphs/%.svg)
+emfs: $(GRAPHS:%.pdf=graphs/%.emf)
+
+$(GRAPHS:%.pdf=graphs/%.png) : %.png : %.pdf
+	convert $< $@
+
+$(GRAPHS:%.pdf=graphs/%.svg) : %.svg : %.pdf
+	pdf2svg $< $@
+
+$(GRAPHS:%.pdf=graphs/%.emf) : %.emf : %.svg
+	inkscape -T $< --export-emf=$@
+
+.PHONY: all-graphs
+all-graphs:
+	$(MAKE) graphs
+	$(MAKE) copy-graphs
+	$(MAKE) svgs pngs emfs
