@@ -22,8 +22,8 @@ N*.native
 #*
 .#*
 **/#*#
-*/Makefile.coq
-*/Makefile.coq.conf
+/Makefile.coq
+/Makefile.coq.conf
 /*.pdf
 /Benchmarks/*.log
 /Benchmarks/*.log.tmp
@@ -39,3 +39,5 @@ N*.native
 /Benchmarks/Parsing_slow.v
 /bench.tmp.wl
 /extra-logs/bak/
+/bench.log
+/bench.tmp.log
