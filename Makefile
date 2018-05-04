@@ -139,3 +139,29 @@ bench.wl: bench.log bench.py $(wildcard extra-logs/*.log extra-logs/*.json extra
 
 bench.tmp.wl: bench.tmp.log bench.py $(wildcard extra-logs/*.log extra-logs/*.json extra-logs/*.json.gz)
 	./bench.py --mathematica bench.tmp.log $(wildcard extra-logs/*.log extra-logs/*.json extra-logs/*.json.gz) > bench.tmp.wl
+
+GRAPHS := \
+	big-actual-reif-2.pdf \
+	big-actual-reif-loglog-2.pdf \
+	big-actual-reif-loglog.pdf \
+	big-actual-reif.pdf \
+	big-flat-actual-reif-loglog.pdf \
+	big-flat-actual-reif.pdf \
+	big-flat-Stats-loglog.pdf \
+	big-norm-reif-loglog.pdf \
+	big-norm-reif.pdf \
+	big-Stats-loglog.pdf \
+	big-Stats.pdf \
+	actual-reif-no-binders.pdf \
+	actual-reif-with-binders.pdf \
+	actual-reif-with-binders-log-log.pdf \
+	actual-reif-with-binders-log-log-subset.pdf
+
+.PHONY: graphs
+graphs: bench.wl reification-by-parametricity-graphs.wls
+	wolframscript -script reification-by-parametricity-graphs.wls
+	$(MAKE) copy-graphs
+
+.PHONY: copy-graphs
+copy-graphs:
+	mv -f -t graphs/ $(GRAPHS)
