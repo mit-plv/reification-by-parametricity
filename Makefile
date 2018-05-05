@@ -183,5 +183,4 @@ $(GRAPHS:%.pdf=graphs/%.emf) : %.emf : %.svg
 .PHONY: all-graphs
 all-graphs:
 	$(MAKE) graphs
-	$(MAKE) copy-graphs
 	$(MAKE) svgs pngs emfs
