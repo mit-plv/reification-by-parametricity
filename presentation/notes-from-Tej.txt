@@ -1,0 +1,19 @@
+
+2 title should be proof by reflection, not reification
+6 start with the problem statement/motivation, not outline (can do outline after some explanation)
+7 defer talking about binders, multiplication, and computation until at least quadratic proof terms are explained
+10 where does slowness come from? (running tactic, size of term, Qed, etc.)
+14 emphasize before starting that this is fake code, even before saying metaprogramming is required
+16 maybe obvious to this audience, but could call out the (var -> expr) parameter since it's the interesting part
+17 said Ltac has tricks, but meant it has pitfalls (related to perf/debugging)
+19 ah, here's my more specific point about the graph: your title is making the point that reification is slow on big terms/binders, but the graph is also showing off that you have evaluated many alternatives, and even includes one of your main results by showing parametricity. I would prefer making these points separately, and I think they would be different graphs (first just claim size of terms is a problem, then say we evaluated many alternatives and show everything but parametricity, and then add parametricity and show where it lies (perhaps you need to zoom in to really demonstrate this, since the scale is lopsided)
+20 "only 120 binders" - should be in motivation
+24 show parameters for specialization (maybe add slide so you can show both for original term and expr)
+27, 28 mentioning speed is a bit of a distraction from your point here
+29 fastest way to explain `pattern` is with a trivial example before/after
+31 couldn't follow what you were showing
+34 as mentioned, I think you should title slide to indicate these put performance in context, explain why it's hard to do better; and second, you should go through every line you show here
+35 commuting explanation should start with the example and explain what you do with it (eg, apply it once to function, apply to 100s of large examples)
+39 as mentioned, explain powerful with something concrete you can do: reify functions while holding their reduction strategies abstract (and I needed an explanation of what you meant by "reduction strategy")
+43, 44 seeing the difference is hard, should be on one slide (concrete example would be even better)
+45 I thought the explanation of denotation correctness was too long to just be a "see paper" but too short for me to really understand. Not sure if it's important enough for a full explanation, up to you.
