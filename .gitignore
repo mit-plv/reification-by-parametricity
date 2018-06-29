@@ -41,3 +41,5 @@ N*.native
 /extra-logs/bak/
 /bench.log
 /bench.tmp.log
+*.swp
+~$*
