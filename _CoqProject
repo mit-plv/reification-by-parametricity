@@ -6,9 +6,9 @@ ReifyCommon.v
 PHOAS.v
 PHOASUtil.v
 BenchmarkUtil.v
-TypeClasses.v
-TypeClassesBodyFlatPHOAS.v
-TypeClassesBodyHOAS.v
+# TypeClasses.v
+# TypeClassesBodyFlatPHOAS.v
+# TypeClassesBodyHOAS.v
 PrimPair.v
 LtacPrimUncurry.v
 LtacTCPrimPair.v
