@@ -1,8 +1,7 @@
 (** * Reification by template-coq *)
 Require Coq.Strings.String.
 Require Import Reify.ReifyCommon.
-Require Import Template.Ast.
-Require Import Template.Template.
+Require Import MetaCoq.Template.All.
 
 Module Compile.
   Import Coq.Strings.String.

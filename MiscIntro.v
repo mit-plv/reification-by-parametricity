@@ -31,7 +31,7 @@ Fixpoint check_is_even (n : nat) : bool
 
 Theorem soundness (n : nat) : check_is_even n = true -> is_even n.
 Proof.
-  revert n; fix 1; destruct n as [|[|n]].
+  revert n; fix soundness 1; destruct n as [|[|n]].
   { constructor. }
   { intro H; inversion H. }
   { specialize (soundness n).

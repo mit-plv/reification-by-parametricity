@@ -1,10 +1,12 @@
 (*i camlp4deps: "parsing/grammar.cma" i*)
 (*i camlp4use: "pa_extend.cmp" i*)
 
-DECLARE PLUGIN "reify_plugin"
+DECLARE PLUGIN "reify"
 
 {
 
+open Ltac_plugin
+open Tacarg
 open Names
 
 let rec unsafe_reify_helper
@@ -114,19 +116,13 @@ let unsafe_Reify
     let rterm = Vars.substn_vars 1 [idvar] rterm in
     Constr.mkLambda (Context.annotR (Name.Name idvar), varty, rterm)
 
-open Ltac_plugin
-open Stdarg
-open Tacarg
-open Names
-
 (** Stolen from plugins/setoid_ring/newring.ml *)
 open Tacexpr
 (* open Misctypes *)
 open Tacinterp
 (* Calling a locally bound tactic *)
 let ltac_lcall tac args =
-    let tac_name = Tacenv.locate_tactic (Libnames.qualid_of_string tac) in
-    TacArg (CAst.make (TacCall (CAst.make (Locus.ArgArg (Loc.tag tac_name), args))))
+    TacArg (CAst.make (TacCall (CAst.make (Locus.ArgVar (CAst.make (Id.of_string tac)), args))))
 
 let ltac_apply (f : Value.t) (args: Tacinterp.Value.t list) =
   let fold arg (i, vars, lfun) =
@@ -141,9 +137,12 @@ let ltac_apply (f : Value.t) (args: Tacinterp.Value.t list) =
 
 let to_ltac_val c = Tacinterp.Value.of_constr c
 
+open Stdarg
+
 }
 
 (** quote the given term, pass the result to t **)
+
 TACTIC EXTEND quote_term_cps
     | [ "quote_term_cps" "[" ident(idvar) "," constr(varty) "]"
           constr(cVar) constr(cO) constr(cS) constr(cOp) constr(cLetIn)
