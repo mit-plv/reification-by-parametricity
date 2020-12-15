@@ -46,7 +46,7 @@ Module Constr.
       match Constr.Unsafe.kind c with
       | Constr.Unsafe.App f args
         => match Constr.Unsafe.kind f with
-           | Constr.Unsafe.Lambda id ty f
+           | Constr.Unsafe.Lambda id f
              => Constr.Unsafe.substnl (Array.to_list args) 0 f
            | _ => c
            end
@@ -54,7 +54,7 @@ Module Constr.
       end.
     Ltac2 zeta1 (c : constr) :=
       match Constr.Unsafe.kind c with
-      | Constr.Unsafe.LetIn id v ty f
+      | Constr.Unsafe.LetIn id v f
         => Constr.Unsafe.substnl [v] 0 f
       | _ => c
       end.

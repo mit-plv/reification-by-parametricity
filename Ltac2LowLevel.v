@@ -64,8 +64,10 @@ Ltac2 rec unsafe_reify_helper
               => let x := Array.get args 2 (* assume the first two args are type params *) in
                  let f := Array.get args 3 in
                  match Constr.Unsafe.kind f with
-                 | Constr.Unsafe.Lambda idx ty body
-                   => let rx := reify_rec x in
+                 | Constr.Unsafe.Lambda binder body
+                   => let idx := Constr.Binder.name binder in
+                      let ty := Constr.Binder.type binder in
+                      let rx := reify_rec x in
                       let rf := reify_rec body in
                       mkLetIn rx idx ty rf
                  | _ => unrecognized term
@@ -114,7 +116,7 @@ Ltac2 unsafe_reify (var : constr) (term : constr) :=
   let mkNatMul (x : constr) (y : constr) := mkApp2 cNatMul x y in
   let mkcLetIn (x : constr) (y : constr) := mkApp2 cLetIn x y in
   let mkLetIn (x : constr) (idx : ident option) (ty : constr) (fbody : constr)
-      := mkcLetIn x (Constr.Unsafe.make (Constr.Unsafe.Lambda idx var fbody)) in
+      := mkcLetIn x (Constr.Unsafe.make (Constr.Unsafe.Lambda (Constr.Binder.make idx var) fbody)) in
   let ret := unsafe_reify_helper
                mkVar mkO mkS mkNatMul mkLetIn gO gS gNatMul gLetIn
                (fun term => term)
@@ -134,7 +136,7 @@ Ltac2 unsafe_Reify (term : constr) :=
   let var := Constr.Unsafe.make (Constr.Unsafe.Var idvar) in
   let rterm := unsafe_reify var term in
   let rterm := Constr.Unsafe.closenl [idvar] 1 rterm in
-  Constr.Unsafe.make (Constr.Unsafe.Lambda (Some idvar) 'Type rterm).
+  Constr.Unsafe.make (Constr.Unsafe.Lambda (Constr.Binder.make (Some idvar) 'Type) rterm).
 
 Ltac2 do_Reify (term : constr) :=
   check_result (unsafe_Reify term).

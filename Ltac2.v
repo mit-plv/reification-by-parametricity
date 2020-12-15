@@ -40,8 +40,11 @@ Ltac2 rec reify_helper
                      show up as [Rel] nodes rather than [Var] nodes *)
 
                match Constr.Unsafe.kind f with
-               | Constr.Unsafe.Lambda id t c
-                 => let c_set := Fresh.Free.of_ids
+               | Constr.Unsafe.Lambda binder c
+                 =>
+                    let id := Constr.Binder.name binder in
+                    let t := Constr.Binder.type binder in
+                    let c_set := Fresh.Free.of_ids
                                    (List.map (fun (id, _, _) => id)
                                              (Control.hyps ())) in
                     let c_set := Fresh.Free.union
