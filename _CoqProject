@@ -23,9 +23,9 @@ CanonicalStructuresFlatPHOAS.v
 CanonicalStructuresHOAS.v
 CanonicalStructuresPHOAS.v
 Mtac2.v
-# Ltac2Common.v
-# Ltac2.v
-# Ltac2LowLevel.v
+Ltac2Common.v
+Ltac2.v
+Ltac2LowLevel.v
 OCamlReify.v
 OCaml.v
 MiscIntro.v
@@ -44,7 +44,7 @@ Benchmarks/LtacPrimUncurry.v
 Benchmarks/LtacVariants.v
 Benchmarks/CanonicalStructures.v
 Benchmarks/Mtac2.v
-#Benchmarks/Ltac2.v
+Benchmarks/Ltac2.v
 Benchmarks/OCaml.v
 Benchmarks/TemplateCoq.v
 #Benchmarks/QuoteFlat.v
