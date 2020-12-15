@@ -33,8 +33,8 @@ To build all of this code, you must have installed:
 
 - OCaml
 - Coq 8.12
-- UniCoq plugin (available at https://github.com/unicoq/unicoq.git
-  branch v1.2-coq8.7-poly)
+- UniCoq plugin (available at https://github.com/unicoq/unicoq.git,
+  branch master-8.12)
 - Mtac2 plugin (available at https://github.com/Mtac2/Mtac2.git, branch master-8.12)
 - Template-Coq plugin (available at
   https://github.com/Template-Coq/template-coq.git, branch coq-8.12)
