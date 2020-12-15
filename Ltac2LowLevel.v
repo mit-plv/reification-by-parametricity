@@ -116,7 +116,7 @@ Ltac2 unsafe_reify (var : constr) (term : constr) :=
   let mkNatMul (x : constr) (y : constr) := mkApp2 cNatMul x y in
   let mkcLetIn (x : constr) (y : constr) := mkApp2 cLetIn x y in
   let mkLetIn (x : constr) (idx : ident option) (ty : constr) (fbody : constr)
-      := mkcLetIn x (Constr.Unsafe.make (Constr.Unsafe.Lambda (Constr.Binder.make idx var) fbody)) in
+      := mkcLetIn x (Constr.Unsafe.make (Constr.Unsafe.Lambda (Constr.Binder.make idx ty) fbody)) in
   let ret := unsafe_reify_helper
                mkVar mkO mkS mkNatMul mkLetIn gO gS gNatMul gLetIn
                (fun term => term)
