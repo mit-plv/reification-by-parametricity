@@ -32,16 +32,12 @@ other terms with the same type. We do not recommend or benchmark this approach.
 To build all of this code, you must have installed:
 
 - OCaml
-- Coq 8.7
-- Ltac2 plugin (available on opam and at
-  https://github.com/ppedrot/ltac2.git branch v8.7)
+- Coq 8.12
 - UniCoq plugin (available at https://github.com/unicoq/unicoq.git
   branch v1.2-coq8.7-poly)
-- Mtac2 plugin (available at https://github.com/Mtac2/Mtac2.git
-  branch master)
+- Mtac2 plugin (available at https://github.com/Mtac2/Mtac2.git, branch master-8.12)
 - Template-Coq plugin (available at
-  https://github.com/Template-Coq/template-coq.git branch
-  coq-8.7)
+  https://github.com/Template-Coq/template-coq.git, branch coq-8.12)
 
 The files which don't use these plugins will build fine without
 them.
