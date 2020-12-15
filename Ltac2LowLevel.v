@@ -20,7 +20,7 @@ Ltac2 rec unsafe_reify_helper
       (mkO : 'a)
       (mkS : 'a -> 'a)
       (mkNatMul : 'a -> 'a -> 'a)
-      (mkLetIn : 'a -> ident option -> constr -> 'a -> 'a)
+      (mkLetIn : 'a -> binder -> 'a -> 'a)
       (gO : constr)
       (gS : constr)
       (gNatMul : constr)
@@ -65,11 +65,9 @@ Ltac2 rec unsafe_reify_helper
                  let f := Array.get args 3 in
                  match Constr.Unsafe.kind f with
                  | Constr.Unsafe.Lambda binder body
-                   => let idx := Constr.Binder.name binder in
-                      let ty := Constr.Binder.type binder in
-                      let rx := reify_rec x in
+                   => let rx := reify_rec x in
                       let rf := reify_rec body in
-                      mkLetIn rx idx ty rf
+                      mkLetIn rx binder rf
                  | _ => unrecognized term
                  end
             | false
@@ -115,8 +113,8 @@ Ltac2 unsafe_reify (var : constr) (term : constr) :=
   let mkS (v : constr) := mkApp1 cS v in
   let mkNatMul (x : constr) (y : constr) := mkApp2 cNatMul x y in
   let mkcLetIn (x : constr) (y : constr) := mkApp2 cLetIn x y in
-  let mkLetIn (x : constr) (idx : ident option) (ty : constr) (fbody : constr)
-      := mkcLetIn x (Constr.Unsafe.make (Constr.Unsafe.Lambda (Constr.Binder.make idx ty) fbody)) in
+  let mkLetIn (x : constr) (bindx : binder) (fbody : constr)
+      := mkcLetIn x (Constr.Unsafe.make (Constr.Unsafe.Lambda bindx fbody)) in
   let ret := unsafe_reify_helper
                mkVar mkO mkS mkNatMul mkLetIn gO gS gNatMul gLetIn
                (fun term => term)
