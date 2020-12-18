@@ -15,54 +15,47 @@ Module var_context.
   | nil
   | cons (n : nat) (v : var) (xs : var_context).
 End var_context.
-Fixpoint find_in_ctx {var : Type} (term : nat)
-         (ctx : @var_context.var_context var)
-  : M (option var)
+
+Definition find_in_ctx {var : Type} (term : nat) :=
+  fix find_in_ctx (ctx : @var_context.var_context var) {struct ctx} : M (option var)
   := match ctx with
-     | var_context.nil => M.ret None
-     | var_context.cons term' v xs
-       => (mif M.unify term term' UniMatchNoRed then
-             M.ret (Some v)
-           else
-             find_in_ctx term xs)
-     end.
+      | var_context.cons term' v xs =>
+        mmatch term' with
+        | [#] term | =n> M.ret (Some v)
+        | _ => M.ret None
+        end
+      | _ => M.ret None
+      end.
 
-Definition mor {A} (t1 t2 : M A) : M A :=
-  M.mtry' t1 (fun _ => t2).
-Notation "a '_or_' b" := (mor a b)  (at level 50).
-
-Definition reify_helper {var : Type} (term : nat)
-           (ctx : @var_context.var_context var)
-  : M (@expr var)
-  := ((mfix2 reify_helper (term : nat)
-             (ctx : @var_context.var_context var)
-       : M (@expr var) :=
-         lvar <- find_in_ctx term ctx;
-           match lvar with
-           | Some v => M.ret (@Var var v)
-           | None
-             =>
-             <[decapp term with O]> UniMatchNoRed (M.ret (@NatO var)) _or_
-             <[decapp term with S]> UniMatchNoRed (fun x : nat =>
-                rx <- reify_helper x ctx;
-                M.ret (@NatS var rx)) _or_
-             <[decapp term with Nat.mul]> UniMatchNoRed (fun x y : nat =>
-                rx <- reify_helper x ctx;
-                ry <- reify_helper y ctx;
-                M.ret (@NatMul var rx ry)) _or_
-             <[decapp term with (@Let_In nat nat)]> UniMatchNoRed (fun v f =>
-                rv <- reify_helper v ctx;
-                rf <- (M.nu
-                         (FreshFrom f) mNone
-                         (fun x : nat
-                          => M.nu
-                               (FreshFrom f) mNone
+Definition reify_helper {var : Type} (term : nat) (ctx : @var_context.var_context var) : M (@expr var) :=
+  Eval lazy beta match iota delta [M_InDepMatcher idmatcher_match idmatcher_return M.mmatch'] in
+  (mfix2 reify_helper (term : nat) (ctx : @var_context.var_context var) : M (@expr var) :=
+     lvar <- find_in_ctx term ctx;
+     match lvar with
+     | Some v => M.ret (@Var var v)
+     | None =>
+       mmatch term with
+       | [#] O | =n> M.ret (@NatO var)
+       | [#] S | x =n>
+         rx <- reify_helper x ctx;
+         M.ret (@NatS var rx)
+       | [#] Nat.mul | x y =n>
+         rx <- reify_helper x ctx;
+         ry <- reify_helper y ctx;
+         M.ret (@NatMul var rx ry)
+       | [#] @Let_In nat nat | v f =n>
+         rv <- reify_helper v ctx;
+         rf <- (M.nu (FreshFrom f) mNone
+                     (fun x : nat
+                       => M.nu Generate mNone
                                (fun vx : var
-                                => let fx := reduce (RedWhd [rl:RedBeta]) (f x) in
+                               => let fx := reduce (RedWhd [rl:RedBeta]) (f x) in
                                    rf <- reify_helper fx (var_context.cons x vx ctx);
-                                   M.abs_fun vx rf)));
-                M.ret (@LetIn var rv rf))
-           end) term ctx).
+                                     M.abs_fun vx rf)));
+         M.ret (@LetIn var rv rf)
+       end
+     end) term ctx.
+
 Definition reify (var : Type) (term : nat) : M (@expr var)
   := reify_helper term var_context.nil.
 Definition Reify (term : nat) : M Expr
