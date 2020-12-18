@@ -17,6 +17,7 @@ KINDS := $(PARSING_KINDS) $(PARSING_FLAT_KINDS) $(PARSING_ELABORATED_KINDS) \
 	LtacVariants \
 	CanonicalStructures \
 	Mtac2 \
+	Mtac2Unfolded \
 	Ltac2 \
 	OCaml \
 	TemplateCoq \
