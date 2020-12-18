@@ -23,6 +23,7 @@ CanonicalStructuresFlatPHOAS.v
 CanonicalStructuresHOAS.v
 CanonicalStructuresPHOAS.v
 Mtac2.v
+Mtac2Unfolded.v
 Ltac2Common.v
 Ltac2.v
 Ltac2LowLevel.v
@@ -44,6 +45,7 @@ Benchmarks/LtacPrimUncurry.v
 Benchmarks/LtacVariants.v
 Benchmarks/CanonicalStructures.v
 Benchmarks/Mtac2.v
+Benchmarks/Mtac2Unfolded.v
 Benchmarks/Ltac2.v
 Benchmarks/OCaml.v
 Benchmarks/TemplateCoq.v
