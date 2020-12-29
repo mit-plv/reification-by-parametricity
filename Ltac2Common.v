@@ -59,6 +59,16 @@ Module Constr.
       | _ => c
       end.
   End Unsafe.
+
+  Ltac2 get_cast_of (c : constr) :=
+    match Constr.Unsafe.kind c with
+    | Constr.Unsafe.Cast _ cst _ => cst
+    | _ => Control.throw (Invalid_argument (Some (Message.of_string "get_cast_of: not a cast")))
+    end.
+
+  Ltac2 get_vm_cast () := get_cast_of '(I <: True).
+  Ltac2 get_native_cast () := get_cast_of '(I <<: True).
+  Ltac2 get_default_cast () := get_cast_of '(I : True).
 End Constr.
 Module Ltac1.
   Class Ltac1Result {T} (v : T) := {}.

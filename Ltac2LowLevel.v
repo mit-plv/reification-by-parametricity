@@ -80,7 +80,10 @@ Ltac2 rec unsafe_reify_helper
       end
     end.
 
-Ltac2 unsafe_reify (var : constr) (term : constr) :=
+Ltac2 unsafe_reify (var_Type : constr) (var : constr) (term : constr) :=
+  let cst := Constr.get_default_cast () in
+  let var_casted (* work around COQBUG(https://github.com/coq/coq/issues/12601) *)
+      := Constr.Unsafe.make (Constr.Unsafe.Cast var cst var_Type) in
   let cVar := '@Var in
   let cO := '@NatO in
   let cS := '@NatS in
@@ -114,7 +117,7 @@ Ltac2 unsafe_reify (var : constr) (term : constr) :=
   let mkNatMul (x : constr) (y : constr) := mkApp2 cNatMul x y in
   let mkcLetIn (x : constr) (y : constr) := mkApp2 cLetIn x y in
   let mkLetIn (x : constr) (bindx : binder) (fbody : constr)
-      := mkcLetIn x (Constr.Unsafe.make (Constr.Unsafe.Lambda bindx fbody)) in
+      := mkcLetIn x (Constr.Unsafe.make (Constr.Unsafe.Lambda (Constr.Binder.make (Constr.Binder.name bindx) var_casted) fbody)) in
   let ret := unsafe_reify_helper
                mkVar mkO mkS mkNatMul mkLetIn gO gS gNatMul gLetIn
                (fun term => term)
@@ -126,15 +129,16 @@ Ltac2 check_result (ret : constr) :=
   | Err exn => Control.zero exn
   end.
 Ltac2 reify (var : constr) (term : constr) :=
-  check_result (unsafe_reify var term).
+  check_result (unsafe_reify (Constr.type var) var term).
 
 Ltac2 unsafe_Reify (term : constr) :=
   let fresh_set := Fresh.Free.of_constr term in
   let idvar := Fresh.fresh fresh_set @var in
   let var := Constr.Unsafe.make (Constr.Unsafe.Var idvar) in
-  let rterm := unsafe_reify var term in
+  let cType := 'Type in
+  let rterm := unsafe_reify cType var term in
   let rterm := Constr.Unsafe.closenl [idvar] 1 rterm in
-  Constr.Unsafe.make (Constr.Unsafe.Lambda (Constr.Binder.make (Some idvar) 'Type) rterm).
+  Constr.Unsafe.make (Constr.Unsafe.Lambda (Constr.Binder.make (Some idvar) cType) rterm).
 
 Ltac2 do_Reify (term : constr) :=
   check_result (unsafe_Reify term).
