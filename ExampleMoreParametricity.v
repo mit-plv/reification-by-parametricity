@@ -371,27 +371,11 @@ Module PolymorphicHigherOrder.
       without changing the type of type codes, because we need a clear
       separation between what we reify and what we don't. *)
 
-  (** Due to %\url{https://github.com/coq/coq/issues/7195}%, we can
-      only adjust types on the first binder, so we need a function
-      that swaps the first two binders. *)
-
-  Ltac swap_first_two_binders x :=
-    lazymatch x with
-    | fun a b => @?x' b a => x'
-    end.
-  Ltac adjust_first_binder_to_type rx :=
-    lazymatch rx with
-    | (fun (N : Set) => ?rx) => constr:(fun (N : Type) => rx)
-    end.
   Ltac Reify x :=
-    let rx := lazymatch (eval pattern nat, (list nat), O, S, Nat.mul,
+    let rx := lazymatch (eval pattern (nat : Type), (list nat : Type), O, S, Nat.mul,
                          (@nil nat), (@cons nat), (@List.map nat nat)
                           in x) with
               | ?rx _ _ _ _ _ _ _ _ => rx end in
-    let rx := adjust_first_binder_to_type rx in
-    let rx := swap_first_two_binders rx in
-    let rx := adjust_first_binder_to_type rx in
-    let rx := swap_first_two_binders rx in
     (** Now we propagate universe constraints, because [nat] is in
         [Set] but [expr] is in [Type]; c.f.,
         %\url{https://github.com/coq/coq/issues/5996}% *)

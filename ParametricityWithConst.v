@@ -26,14 +26,11 @@ Ltac reify_with_consts var find_const plug_const term :=
     ltac:(fun _
           => let rx :=
                  lazymatch
-                   (eval pattern nat, Nat.mul, (@Let_In nat (fun _ => nat)), O, S
+                   (eval pattern (nat : Type), Nat.mul, (@Let_In nat (fun _ => nat)), O, S
                      in term)
                  with
                  | ?rx _ _ _ _ _ => rx
                  end in
-             let rx := lazymatch rx with
-                       | fun N : Set => ?rx => constr:(fun N : Type => rx)
-                       end in
              let __ := type of rx in (* propagate universe constraints, c.f., https://github.com/coq/coq/issues/5996 *)
              constr:(rx (@expr var) (@NatMul var)
                         (fun x' f'
