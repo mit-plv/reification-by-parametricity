@@ -1,13 +1,15 @@
 *.vo
+*.vos
+*.vok
 *.glob
-*.v.d
+*.d
 *.a
 *.cmi
 *.cmt
 *.cmx
 *.cmxs
 *.cmxa
-*.ml4.d
+*.mlg.d
 *.mllib.d
 *.mlpack.d
 *.o
@@ -41,5 +43,8 @@ N*.native
 /extra-logs/bak/
 /bench.log
 /bench.tmp.log
+/named_timers_plugin.ml
+/reify_plugin.ml
+/sandbox_plugin.ml
 *.swp
 ~$*
