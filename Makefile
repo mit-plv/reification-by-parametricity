@@ -21,8 +21,8 @@ KINDS := $(PARSING_KINDS) $(PARSING_FLAT_KINDS) $(PARSING_ELABORATED_KINDS) \
 	Ltac2 \
 	OCaml \
 	TemplateCoq \
-	QuoteFlat \
-	Parametricity
+	Parametricity \
+#	QuoteFlat
 
 .PHONY: coq
 coq: Makefile.coq
