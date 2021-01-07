@@ -24,6 +24,8 @@ KINDS := $(PARSING_KINDS) $(PARSING_FLAT_KINDS) $(PARSING_ELABORATED_KINDS) \
 	Parametricity \
 #	QuoteFlat
 
+WOLFRAMSCRIPT?=$(shell which wolframscript 2>/dev/null || which wolframscript.exe 2>/dev/null || echo wolframscript)
+
 .PHONY: coq
 coq: Makefile.coq
 	$(MAKE) -f Makefile.coq
@@ -160,7 +162,7 @@ GRAPHS := \
 
 .PHONY: graphs
 graphs: bench.wl reification-by-parametricity-graphs.wls
-	wolframscript -script reification-by-parametricity-graphs.wls
+	$(WOLFRAMSCRIPT) -script reification-by-parametricity-graphs.wls
 	$(MAKE) copy-graphs
 
 .PHONY: copy-graphs
