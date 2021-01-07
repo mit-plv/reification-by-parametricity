@@ -3,10 +3,10 @@ Require Export Reify.Mtac2Unfolded.
 
 Definition max_n (is_flat : bool) (speed : speed_classifier) : nat
   := match speed, is_flat with
-     | quick, true => 1500
-     | medium, true => 10 * 1000 (* time is about (2 * sz / 1000) sec *)
-     | quick, false => 95
-     | medium, false => 450
+     | quick, true => 6 * 1000
+     | medium, true => 30 * 1000
+     | quick, false => 300
+     | medium, false => 2 * 1000
      | _, _ => 30 * 1000
      end.
 
