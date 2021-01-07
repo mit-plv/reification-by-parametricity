@@ -28,6 +28,12 @@ DataForConstKinds[name_,range_,constKinds_]:=DataForConstKinds[name,range,constK
 DataFor[name_,const_,range_]:=DataForKinds[name,const,range,KindsFor[name,const,range]];
 GetXBoundaryReference[data_]:=Min[Map[Max[Map[#1[[1]]&,#1]]&,data]];
 
+ClearAll[AdjustCalloutPositionFor];
+(* In Mathematica 11, Callout and Text use the same sort of coordinates; in 8.12, Text coordinates are log-scaled in log plots, while Callout coordinates are not *)
+AdjustCalloutPositionFor[plotopts_,{x_,y_}]:=If[TrueQ[$VersionNumber>=12],
+("CopiedValueFunction"/.("CoordinatesToolOptions"/.(Method/.plotopts)))[{x,y}],
+{x,y}];
+
 ClearAll[MakeCallout,CalloutWithAt,CollectInsets,CollectImagePadding,Replot,GetColor,AddColors,AddColorsToData,GetAPos,GetSortingKey,GetColorFrom,CollectImagePadding,Resort,Compare,KeyForYPos,AddColoredBox];
 GetColor[colors_,idx_]:=(*From https://mathematica.stackexchange.com/a/54632/12258*)colors[[Mod[idx,Length[colors],1]]];
 GetColorFrom[colors_,idx_,idxLength_]:=GetColor[colors,(*idxLength+1-*)idx];
@@ -46,11 +52,11 @@ Resort[xpos_,dataLabelYPos_,maxIter_: 1]:=Module[{data,label,ypos},{data,label,y
 {data,label}=Transpose[Sort[Transpose[{data,label}],Compare[#1[[1]],#2[[1]]]&]];
 ypos=SortBy[ypos,KeyForYPos];
 Transpose[{data,label,ypos}]];
-MakeCallout[{apos_,data_,label_,{_,Offset[{dx_,dy_},{x_,y_}]}}]:=Callout[StyleWith[data,label],DropStyle[label],{{x,y},{0,0.5}},apos];
-CalloutWithAt[colors_,xpos_,ypositions_,data_,labels_]:=Module[{labeledData},labeledData=Transpose[{data,labels,ypositions}];
+MakeCallout[{apos_,data_,label_,{_,Offset[{dx_,dy_},{x_,y_}]}},plotopts_]:=Callout[StyleWith[data,label],DropStyle[label],{AdjustCalloutPositionFor[plotopts,{x,y}],{0,0.5}},apos];
+CalloutWithAt[colors_,xpos_,ypositions_,data_,labels_,plotopts_]:=Module[{labeledData},labeledData=Transpose[{data,labels,ypositions}];
 labeledData=AddColorsToData[colors,Resort[xpos,labeledData]];
 labeledData=Map[Join[{GetAPos[xpos,#[[1]]]},#]&,labeledData];
-MakeCallout/@labeledData];
+MakeCallout[#,plotopts]&/@labeledData];
 CollectInsets[{v___}]:=Flatten[CollectInsets/@{v}/.CollectInsets[_]:>{}];
 CollectInsets[Graphics[v___]]:=CollectInsets[{v}];
 CollectInsets[GraphicsGroup[v___]]:=CollectInsets[{v}];
@@ -69,10 +75,10 @@ CollectInsets[_:>_]:={};
 CollectImagePadding[___,OptionsPattern[Graphics]]:=OptionValue[ImagePadding];
 Replot[xpos_,Plot_,data_,labels_,opts___]:=Module[{plot0,ypos,padding,allopts,colors},colors="DefaultPlotStyle"/.(Method/.Charting`ResolvePlotTheme[Automatic,Plot]);
 plot0=Plot[data,PlotLabels->AddColors[colors,Map[DropStyle,labels]],opts];
-allopts=plot0/.Graphics[_,v___]:>{v};
+allopts=Options[plot0];
 padding=CollectImagePadding@@plot0;
 ypos=Sort[CollectInsets[plot0]/.Text[_,Offset[d_,{x_,y_}],{0,0}]:>{y,Offset[d,{x,y}]}];
-Plot[CalloutWithAt[colors,xpos,ypos,data,labels],opts,ImagePadding->padding,PlotRangeClipping->False]/.Text[v_,Offset[{dx_,dy_},{x_,y_}],{0,0}]:>Text[v,Offset[{12(*magic number*),dy},{x,y}],{Left,Center}] (*fix for pdf export,see https://mathematica.stackexchange.com/questions/162942/how-can-i-get-mathematica-to-not-mis-align-plot-labels-when-exporting-to-pdf-wit/163458#163458*)];
+Plot[CalloutWithAt[colors,xpos,ypos,data,labels,allopts],opts,ImagePadding->padding,PlotRangeClipping->False]/.Text[v_,Offset[{dx_,dy_},{x_,y_}],{0,0}]:>Text[v,Offset[{12(*magic number*),dy},{x,y}],{Left,Center}] (*fix for pdf export,see https://mathematica.stackexchange.com/questions/162942/how-can-i-get-mathematica-to-not-mis-align-plot-labels-when-exporting-to-pdf-wit/163458#163458*)];
 
 DoPlotGen[Plot_,name_,const_,{xrange_,yrange_},extraname_: "",oplotlabel_: Default,okinds_: Default,oconstKinds_: Default,opts___]:=Module[{kinds,plotlabel,data,labels,xpos},plotlabel=If[SameQ[oplotlabel,Default],If[extraname=="",{const,name},{const,name,extraname}],oplotlabel];
 kinds=If[SameQ[okinds,Default],KindsFor[name,const,{xrange,yrange}],okinds];
@@ -91,6 +97,8 @@ If[$Input==="",Print[plot]];
 Print[Export[FileNameJoin[{ND,fname}],plot]]];
 
 MakeAndExport[Plot_,name_,const_,range_,extratitle_: "",opts___]:=MakeAndExportGen[Plot,name,const,range,extratitle,Default,Default,Default,Default,opts];
+
+
 
 MakeAndExportGen[ListPlot,"big_flat","actual reif",{Full,{0,7}},"","Size of term (no binders) vs Reification time","actual-reif-no-binders"]
 MakeAndExportGen[ListPlot,"big","actual reif",{{0,300},{0,5}},"","Size of term (with binders) vs Reification time","actual-reif-with-binders"]
