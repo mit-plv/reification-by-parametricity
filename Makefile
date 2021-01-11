@@ -26,6 +26,39 @@ KINDS := $(PARSING_KINDS) $(PARSING_FLAT_KINDS) $(PARSING_ELABORATED_KINDS) \
 
 WOLFRAMSCRIPT?=$(shell which wolframscript 2>/dev/null || which wolframscript.exe 2>/dev/null || echo wolframscript)
 
+# Print shell commands (set to non empty)
+VERBOSE ?=
+
+# Time the Coq process (set to non empty), and how (see default value)
+TIMED?=
+TIMECMD?=
+# Use command time on linux, gtime on Mac OS
+TIMEFMT?="$@ (real: %e, user: %U, sys: %S, mem: %M ko)"
+ifneq (,$(TIMED))
+ifeq (0,$(shell command time -f "" true >/dev/null 2>/dev/null; echo $$?))
+STDTIME?=command time -f $(TIMEFMT)
+else
+ifeq (0,$(shell gtime -f "" true >/dev/null 2>/dev/null; echo $$?))
+STDTIME?=gtime -f $(TIMEFMT)
+else
+STDTIME?=command time
+endif
+endif
+else
+STDTIME?=command time -f $(TIMEFMT)
+endif
+
+ifneq (,$(COQBIN))
+# add an ending /
+COQBIN:=$(COQBIN)/
+endif
+
+SHOW := $(if $(VERBOSE),@true "",@echo "")
+HIDE := $(if $(VERBOSE),,@)
+
+TIMER=$(if $(TIMED), $(STDTIME), $(TIMECMD))
+
+
 .PHONY: coq
 coq: Makefile.coq
 	$(MAKE) -f Makefile.coq
@@ -115,11 +148,11 @@ $(PARSING_ELABORATED_LOGS:.log=.v) : %.v : Benchmarks/make_test_parsing_elaborat
 parsing-test-files: $(PARSING_LOGS:.log=.v) $(PARSING_FLAT_LOGS:.log=.v) $(PARSING_ELABORATED_LOGS:.log=.v)
 
 $(NORMAL_LOGS) : Benchmarks/%.log : Benchmarks/%.v
-	$(COQBIN)coqc -q -Q . Reify -I . $< > $@.tmp && mv -f $@.tmp $@
+	$(TIMER) $(COQBIN)coqc -q -Q . Reify -I . $< > $@.tmp && mv -f $@.tmp $@
 
 $(PRINTING_LOGS) : Benchmarks/%.log : Benchmarks/%.v
 	rm -f $@.ok
-	($(COQBIN)coqc -q -Q . Reify -I . $<; touch $@.ok) | grep -v 'elet' | grep -v 'expr' | grep -v 'fun var' > $@.tmp && mv -f $@.tmp $@
+	($(TIMER) $(COQBIN)coqc -q -Q . Reify -I . $<; touch $@.ok) | grep -v 'elet' | grep -v 'expr' | grep -v 'fun var' > $@.tmp && mv -f $@.tmp $@
 	rm $@.ok
 
 .PHONY: bench.log bench.tmp.log
