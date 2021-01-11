@@ -24,7 +24,7 @@ KINDS := $(PARSING_KINDS) $(PARSING_FLAT_KINDS) $(PARSING_ELABORATED_KINDS) \
 	Parametricity \
 #	QuoteFlat
 
-WOLFRAMSCRIPT?=$(shell which wolframscript 2>/dev/null || which wolframscript.exe 2>/dev/null || echo wolframscript)
+WOLFRAMSCRIPT?="$(shell which wolframscript 2>/dev/null || which wolframscript.exe 2>/dev/null || echo wolframscript)"
 
 # Print shell commands (set to non empty)
 VERBOSE ?=

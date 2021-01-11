@@ -49,6 +49,11 @@ def average(values):
     return (('%%.0%df' % (3 + int(math.ceil(math.log(len(values))))))
             % (sum(map(float, values)) / len(values)))
 
+def median(values):
+    values = sorted(list(values))
+    if len(values) == 1: return values[0]
+    return average(values[(len(values) - 1) // 2 : (len(values) // 2) + 1])
+
 def update_dict_with(d1, d2):
     for k, v in d2.items():
         if k not in d1.keys():
