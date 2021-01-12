@@ -108,7 +108,7 @@ Join[
 Map[{"actual reif",#}&,KindsFor["big","actual reif",range]],
 Map[{"Stats",Style[#,Dashed]}&,{"identity lazy","lazy Denote","transitivity"}]
 ]]]
-With[{range={{100,20000},{0,10}}},
+With[{range={{100,20000},{0.001,10}}},
 MakeAndExportGen[ListLogLogPlot,"big","actual reif",range,"","Size of term (with binders) vs Reification time (log-log)","actual-reif-with-binders-log-log-subset",Default,
 Join[
 Map[{"actual reif",#}&,{"ParsingElaborated","beta; Parametricity", "TemplateCoq","Parametricity; beta", "OCaml","Ltac2LowLevel"}],
@@ -118,10 +118,10 @@ MakeAndExportGen[ListLogLogPlot,"big_flat","Stats",{Full,Full},"","Size of term 
 MakeAndExportGen[ListLogLogPlot,"big_flat","actual reif",{Full,Full},"","Size of term (without binders) vs Reification time (log-log)"]
 MakeAndExportGen[ListPlot,"big_flat","actual reif",{Full,Full},"","Size of term (without binders) vs Reification time"]
 MakeAndExportGen[ListPlot,"big","Stats",{Full,{0,5}},"","Size of term (with binders) vs Operation time",Default,Default,Default,AxesOrigin->{0,0}]
-MakeAndExportGen[ListLogLogPlot,"big","Stats",{Full,{0,5}},"","Size of term (with binders) vs Operation time (log-log)"]
+MakeAndExportGen[ListLogLogPlot,"big","Stats",{Full,{0.001,5}},"","Size of term (with binders) vs Operation time (log-log)"]
 MakeAndExportGen[ListLogLogPlot,"big","actual reif",{{0,1000},Full},"","Size of term (with binders) vs Reification time (log-log)"]
 MakeAndExportGen[ListPlot,"big","actual reif",{{0,300},{0,5}},"","Size of term (with binders) vs Reification time"]
-MakeAndExportGen[ListLogLogPlot,"big","actual reif",{{1500,20000},{0,7}},"","Size of term (with binders) vs Reification time (log-log, large terms only)","big-actual-reif-loglog-2"]
+MakeAndExportGen[ListLogLogPlot,"big","actual reif",{{1500,20000},{0.001,7}},"","Size of term (with binders) vs Reification time (log-log, large terms only)","big-actual-reif-loglog-2"]
 MakeAndExportGen[ListPlot,"big","actual reif",{{1500,20000},{0,7}},"","Size of term (with binders) vs Reification time (large terms only)","big-actual-reif-2"]
-MakeAndExportGen[ListLogLogPlot,"big","norm reif",{{1500,20000},{0,7}},"","Size of term (with binders) vs Reification+normalization time (log-log)"]
+MakeAndExportGen[ListLogLogPlot,"big","norm reif",{{1500,20000},{0.001,7}},"","Size of term (with binders) vs Reification+normalization time (log-log)"]
 MakeAndExportGen[ListPlot,"big","norm reif",{{1500,20000},{0,7}},"","Size of term (with binders) vs Reification+normalization time"]
