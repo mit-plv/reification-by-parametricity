@@ -24,6 +24,7 @@ KINDS := $(PARSING_KINDS) $(PARSING_FLAT_KINDS) $(PARSING_ELABORATED_KINDS) \
 	Parametricity \
 #	QuoteFlat
 
+SKIP_DEPS?=
 WOLFRAMSCRIPT?="$(shell which wolframscript 2>/dev/null || which wolframscript.exe 2>/dev/null || echo wolframscript)"
 
 # Print shell commands (set to non empty)
@@ -194,7 +195,11 @@ GRAPHS := \
 	actual-reif-with-binders-log-log-subset.pdf
 
 .PHONY: graphs
-graphs: bench.wl reification-by-parametricity-graphs.wls
+ifneq (1,$(SKIP_DEPS))
+graphs: bench.wl
+endif
+
+graphs: reification-by-parametricity-graphs.wls
 	$(WOLFRAMSCRIPT) -script reification-by-parametricity-graphs.wls
 	$(MAKE) copy-graphs
 
