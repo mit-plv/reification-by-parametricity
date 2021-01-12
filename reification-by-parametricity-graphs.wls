@@ -80,23 +80,36 @@ padding=CollectImagePadding@@plot0;
 ypos=Sort[CollectInsets[plot0]/.Text[_,Offset[d_,{x_,y_}],{0,0}]:>{y,Offset[d,{x,y}]}];
 Plot[CalloutWithAt[colors,xpos,ypos,data,labels,allopts],opts,ImagePadding->padding,PlotRangeClipping->False]/.Text[v_,Offset[{dx_,dy_},{x_,y_}],{0,0}]:>Text[v,Offset[{12(*magic number*),dy},{x,y}],{Left,Center}] (*fix for pdf export,see https://mathematica.stackexchange.com/questions/162942/how-can-i-get-mathematica-to-not-mis-align-plot-labels-when-exporting-to-pdf-wit/163458#163458*)];
 
-DoPlotGen[Plot_,name_,const_,{xrange_,yrange_},extraname_: "",oplotlabel_: Default,okinds_: Default,oconstKinds_: Default,opts___]:=Module[{kinds,plotlabel,data,labels,xpos},plotlabel=If[SameQ[oplotlabel,Default],If[extraname=="",{const,name},{const,name,extraname}],oplotlabel];
+DoPlotGen[Plot_,name_,const_,{xrange_,yrange_},extraname_: "",oplotlabel_: Default,okinds_: Default,oconstKinds_: Default,oplotRange_:Default,opts___]:=
+Module[{kinds,plotlabel,data,labels,xpos,plotRange,ymaxval},
+plotlabel=If[SameQ[oplotlabel,Default],If[extraname=="",{const,name},{const,name,extraname}],oplotlabel];
 kinds=If[SameQ[okinds,Default],KindsFor[name,const,{xrange,yrange}],okinds];
 labels=If[SameQ[oconstKinds,Default],kinds,Map[#[[2]]&,oconstKinds]];
 data=If[SameQ[oconstKinds,Default],DataForKinds[name,const,{xrange,yrange},Map[DropStyle,kinds]],DataForConstKinds[name,{xrange,yrange},Map[DropStyle,oconstKinds]]];
+ymaxval=Max[(Max[#[[2]]&/@#])&/@data];
+plotRange=If[SameQ[oplotRange,Default],
+If[MemberQ[{ListLogPlot,ListLogLogPlot,LogPlot,LogLogPlot},Plot],
+{Full,{0.0009,If[SameQ[Head[yrange],List],
+yrange[[2]],
+If[MemberQ[{Full,Automatic},yrange],
+1.1 ymaxval,
+yrange]
+]}},
+{Full,Full}],
+oplotRange];
 xpos=GetXBoundaryReference[data];
-Replot[xpos,Plot,data,labels,Joined->True,ImageSize->800,AxesLabel->{n//DisplayForm,"Time (s)"},PlotRange->{Full,Full},PlotLabel->plotlabel,opts]];
+Replot[xpos,Plot,data,labels,Joined->True,ImageSize->800,AxesLabel->{n//DisplayForm,"Time (s)"},PlotRange->plotRange,PlotLabel->plotlabel,opts]];
 
-DoPlot[Plot_,name_,const_,{xrange_,yrange_},extraname_,opts___]:=DoPlotGen[Plot,name,const,{xrange,yrange},extraname,Default,Default,Default,opts];
+DoPlot[Plot_,name_,const_,range_,extraname_,opts___]:=DoPlotGen[Plot,name,const,range,extraname,Default,Default,Default,Default,opts];
 
-MakeAndExportGen[Plot_,name_,const_,range_,extratitle_: "",oplotlabel_: Default,ofname_: Default,okinds_: Default,oconstKinds_: Default,opts___]:=Module[{plot,extraname,fname,plotlabel,kinds},fname=If[SameQ[ofname,Default],StringReplace[name<>"-"<>const,{" "->"-","_"->"-"}]<>If[SameQ[Plot,ListLogLogPlot],"-loglog",""]<>extratitle<>".pdf",ofname<>".pdf"];
+MakeAndExportGen[Plot_,name_,const_,range_,extratitle_: "",oplotlabel_: Default,ofname_: Default,okinds_: Default,oconstKinds_: Default,oplotRange_:Default,opts___]:=Module[{plot,extraname,fname,plotlabel,kinds},fname=If[SameQ[ofname,Default],StringReplace[name<>"-"<>const,{" "->"-","_"->"-"}]<>If[SameQ[Plot,ListLogLogPlot],"-loglog",""]<>extratitle<>".pdf",ofname<>".pdf"];
 extraname=If[SameQ[Plot,ListLogLogPlot],"log-log"<>extratitle,extratitle];
 Print["Plotting: "<>name<>"_"<>const<>If[SameQ[Plot,ListLogLogPlot]," (log-log)",""]<>extratitle<>If[Not[SameQ[oplotlabel,Default]]," ("<>oplotlabel<>")",""]];
-plot=DoPlotGen[Plot,name,const,range,extraname,oplotlabel,okinds,oconstKinds,opts];
+plot=DoPlotGen[Plot,name,const,range,extraname,oplotlabel,okinds,oconstKinds,oplotRange,opts];
 If[$Input==="",Print[plot]];
 Print[Export[FileNameJoin[{ND,fname}],plot]]];
 
-MakeAndExport[Plot_,name_,const_,range_,extratitle_: "",opts___]:=MakeAndExportGen[Plot,name,const,range,extratitle,Default,Default,Default,Default,opts];
+MakeAndExport[Plot_,name_,const_,range_,extratitle_: "",opts___]:=MakeAndExportGen[Plot,name,const,range,extratitle,Default,Default,Default,Default,Default,opts];
 
 
 
@@ -108,7 +121,7 @@ Join[
 Map[{"actual reif",#}&,KindsFor["big","actual reif",range]],
 Map[{"Stats",Style[#,Dashed]}&,{"identity lazy","lazy Denote","transitivity"}]
 ]]]
-With[{range={{100,20000},{0.001,10}}},
+With[{range={{100,20000},{0,10}}},
 MakeAndExportGen[ListLogLogPlot,"big","actual reif",range,"","Size of term (with binders) vs Reification time (log-log)","actual-reif-with-binders-log-log-subset",Default,
 Join[
 Map[{"actual reif",#}&,{"ParsingElaborated","beta; Parametricity", "TemplateCoq","Parametricity; beta", "OCaml","Ltac2LowLevel"}],
@@ -117,11 +130,11 @@ Map[{"Stats",Style[#,Dashed]}&,{"identity lazy","lazy Denote","transitivity"}]
 MakeAndExportGen[ListLogLogPlot,"big_flat","Stats",{Full,Full},"","Size of term (without binders) vs Operation time (log-log)"]
 MakeAndExportGen[ListLogLogPlot,"big_flat","actual reif",{Full,Full},"","Size of term (without binders) vs Reification time (log-log)"]
 MakeAndExportGen[ListPlot,"big_flat","actual reif",{Full,Full},"","Size of term (without binders) vs Reification time"]
-MakeAndExportGen[ListPlot,"big","Stats",{Full,{0,5}},"","Size of term (with binders) vs Operation time",Default,Default,Default,AxesOrigin->{0,0}]
-MakeAndExportGen[ListLogLogPlot,"big","Stats",{Full,{0.001,5}},"","Size of term (with binders) vs Operation time (log-log)"]
+MakeAndExportGen[ListPlot,"big","Stats",{Full,{0,5}},"","Size of term (with binders) vs Operation time",Default,Default,Default,Default,AxesOrigin->{0,0}]
+MakeAndExportGen[ListLogLogPlot,"big","Stats",{Full,{0,5}},"","Size of term (with binders) vs Operation time (log-log)"]
 MakeAndExportGen[ListLogLogPlot,"big","actual reif",{{0,1000},Full},"","Size of term (with binders) vs Reification time (log-log)"]
 MakeAndExportGen[ListPlot,"big","actual reif",{{0,300},{0,5}},"","Size of term (with binders) vs Reification time"]
-MakeAndExportGen[ListLogLogPlot,"big","actual reif",{{1500,20000},{0.001,7}},"","Size of term (with binders) vs Reification time (log-log, large terms only)","big-actual-reif-loglog-2"]
+MakeAndExportGen[ListLogLogPlot,"big","actual reif",{{1500,20000},{0,7}},"","Size of term (with binders) vs Reification time (log-log, large terms only)","big-actual-reif-loglog-2"]
 MakeAndExportGen[ListPlot,"big","actual reif",{{1500,20000},{0,7}},"","Size of term (with binders) vs Reification time (large terms only)","big-actual-reif-2"]
-MakeAndExportGen[ListLogLogPlot,"big","norm reif",{{1500,20000},{0.001,7}},"","Size of term (with binders) vs Reification+normalization time (log-log)"]
+MakeAndExportGen[ListLogLogPlot,"big","norm reif",{{1500,20000},{0,7}},"","Size of term (with binders) vs Reification+normalization time (log-log)"]
 MakeAndExportGen[ListPlot,"big","norm reif",{{1500,20000},{0,7}},"","Size of term (with binders) vs Reification+normalization time"]
